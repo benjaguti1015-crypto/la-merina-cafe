@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.crear_fidelidad() FROM PUBLIC, anon, authenticated;
