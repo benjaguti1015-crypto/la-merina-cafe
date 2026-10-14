@@ -26,13 +26,13 @@ export function Terminos({ className = "" }: { className?: string }) {
           en Instagram.
         </li>
         <li>
-          Premios al completar tu tarjeta de {META} sellos:{" "}
+          Premios oficiales de tu tarjeta de {META} sellos:{" "}
           {Object.entries(PREMIOS)
             .map(([n, p]) => `sello ${n}, ${p.toLowerCase()}`)
             .join("; ")}
           .
         </li>
-        <li>Los premios se canjean en tu próxima visita y están sujetos a disponibilidad.</li>
+        <li>Los premios se canjean en tu próxima compra y dependen del stock del día.</li>
       </ul>
     </details>
   );

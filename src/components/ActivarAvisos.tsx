@@ -21,8 +21,10 @@ export function ActivarAvisos({
   instalada: boolean;
 }) {
   const [estado, setEstado] = useState<Estado>("oculto");
+  const [aceptados, setAceptados] = useState(false);
 
   useEffect(() => {
+    setAceptados(localStorage.getItem("avisos_aceptados") === "1");
     if (!CLAVE_PUBLICA) return;
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
       // iPhone solo permite avisos con la tarjeta guardada en el inicio.
@@ -92,7 +94,11 @@ export function ActivarAvisos({
         disabled={estado === "guardando"}
         className="text-sm font-semibold text-primary underline transition-transform active:scale-[0.97] disabled:opacity-60"
       >
-        {estado === "guardando" ? "Activando…" : "🔔 Activar avisos de promos"}
+        {estado === "guardando"
+          ? "Activando…"
+          : aceptados
+            ? "🔔 Activa los avisos que aceptaste"
+            : "🔔 Activar avisos de promos"}
       </button>
       {estado === "error" && (
         <p className="mt-1 text-xs text-destructive">No pudimos activarlos. Inténtalo de nuevo.</p>

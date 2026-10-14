@@ -153,6 +153,10 @@ export type Database = {
         Args: { p_auth: string; p_enlace: string; p_endpoint: string; p_p256dh: string }
         Returns: boolean
       }
+      registrar_consentimiento: {
+        Args: { p_acepta_avisos: boolean; p_enlace: string }
+        Returns: boolean
+      }
       registro_publico: {
         Args: { p_cumpleanos?: string | null; p_instagram: string; p_nombre: string }
         Returns: string

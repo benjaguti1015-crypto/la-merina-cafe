@@ -30,6 +30,8 @@ function Registro() {
   const [nombre, setNombre] = useState("");
   const [instagram, setInstagram] = useState("");
   const [cumpleanos, setCumpleanos] = useState<Cumple>(null);
+  const [aceptaTerminos, setAceptaTerminos] = useState(false);
+  const [aceptaAvisos, setAceptaAvisos] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
 
@@ -43,6 +45,11 @@ function Registro() {
     }
     if (instagram.trim().replace(/^@/, "").length < 2) {
       setError("Déjanos tu usuario de Instagram.");
+      return;
+    }
+
+    if (!aceptaTerminos) {
+      setError("Para crear tu tarjeta debes aceptar los términos y la política de privacidad.");
       return;
     }
 
@@ -63,6 +70,11 @@ function Registro() {
       setError("No pudimos crear tu tarjeta. Inténtalo de nuevo.");
       return;
     }
+    // Respaldo del consentimiento: si falla, no bloquea el registro.
+    supabase
+      .rpc("registrar_consentimiento", { p_enlace: data, p_acepta_avisos: aceptaAvisos })
+      .then(({ error: e }) => e && console.error("No se guardó el consentimiento:", e));
+    if (aceptaAvisos) localStorage.setItem("avisos_aceptados", "1");
     localStorage.setItem("tarjeta_enlace", data as string);
     sessionStorage.setItem("recien_registrado", "1");
     navigate({ to: "/t/$enlace", params: { enlace: data as string } });
@@ -125,17 +137,53 @@ function Registro() {
         <CampoCumpleanos onChange={setCumpleanos} className="mt-1" />
         <p className="mt-1 text-xs text-muted-foreground">Así te saludamos en tu día. 🎉</p>
 
+        <Terminos className="mt-5" />
+
+        <label className="mt-4 flex cursor-pointer items-start gap-3 text-sm leading-snug text-primary">
+          <input
+            type="checkbox"
+            checked={aceptaTerminos}
+            onChange={(e) => setAceptaTerminos(e.target.checked)}
+            className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-primary"
+          />
+          <span>
+            Leí y acepto los términos y condiciones y la{" "}
+            <a
+              href="/privacidad"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold underline"
+            >
+              política de privacidad
+            </a>
+            .
+          </span>
+        </label>
+
+        <label className="mt-3 flex cursor-pointer items-start gap-3 text-sm leading-snug text-primary">
+          <input
+            type="checkbox"
+            checked={aceptaAvisos}
+            onChange={(e) => setAceptaAvisos(e.target.checked)}
+            className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-primary"
+          />
+          <span>
+            Quiero recibir avisos de promociones en mi celular.{" "}
+            <span className="text-muted-foreground">
+              (Opcional. Puedes desactivarlos cuando quieras.)
+            </span>
+          </span>
+        </label>
+
         {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
 
         <button
           type="submit"
-          disabled={enviando || !nombre.trim() || !instagram.trim()}
+          disabled={enviando || !aceptaTerminos || !nombre.trim() || !instagram.trim()}
           className="mt-5 w-full rounded-xl bg-primary px-4 py-3 font-semibold text-primary-foreground transition-[transform,opacity] hover:opacity-90 active:scale-[0.97] disabled:opacity-60"
         >
           {enviando ? "Creando tarjeta…" : "Crear mi tarjeta"}
         </button>
-
-        <Terminos className="mt-4" />
 
         <p className="mt-4 text-center text-xs text-muted-foreground">
           ¿Ya tienes tarjeta?{" "}
