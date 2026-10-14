@@ -1,6 +1,12 @@
 // La ovejita del logo de La Merina. Blanca para el sello marcado;
 // `contorno` la dibuja en línea azul para las casillas vacías.
-export function Oveja({ className = "", contorno = false }: { className?: string; contorno?: boolean }) {
+export function Oveja({
+  className = "",
+  contorno = false,
+}: {
+  className?: string;
+  contorno?: boolean;
+}) {
   const lana = contorno ? "none" : "#ffffff";
   const linea = contorno ? "var(--petroleo)" : "#ffffff";
   return (
@@ -25,7 +31,13 @@ export function Oveja({ className = "", contorno = false }: { className?: string
         stroke={linea}
         strokeWidth="1.4"
       />
-      <path d="M24.4 8.6c-1.4-.6-2.4-.2-2.8.6" stroke={linea} strokeWidth="1.4" strokeLinecap="round" fill="none" />
+      <path
+        d="M24.4 8.6c-1.4-.6-2.4-.2-2.8.6"
+        stroke={linea}
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        fill="none"
+      />
       <circle cx="27.4" cy="11" r="0.8" fill="var(--petroleo)" />
     </svg>
   );

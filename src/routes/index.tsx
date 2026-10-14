@@ -22,8 +22,7 @@ export const Route = createFileRoute("/")({
       { title: `Panel | ${MARCA_COMPLETA}` },
       {
         name: "description",
-        content:
-          `Panel de administración de la tarjeta de fidelidad de ${MARCA_COMPLETA}: registra clientes y suma sellos.`,
+        content: `Panel de administración de la tarjeta de fidelidad de ${MARCA_COMPLETA}: registra clientes y suma sellos.`,
       },
       { property: "og:title", content: `Panel | ${MARCA_COMPLETA}` },
       {
@@ -88,7 +87,11 @@ function Login() {
         onSubmit={enviar}
         className="w-full max-w-sm rounded-3xl border border-primary/30 bg-card p-6 shadow-card"
       >
-        <img src="/logo.png" alt={`Logo ${MARCA}`} className="mx-auto h-24 w-24 rounded-full ring-4 ring-arena" />
+        <img
+          src="/logo.png"
+          alt={`Logo ${MARCA}`}
+          className="mx-auto h-24 w-24 rounded-full ring-4 ring-arena"
+        />
         <h1 className="mt-3 text-center text-xl text-primary">Panel {MARCA}</h1>
         <p className="mt-1 text-center text-xs uppercase tracking-[0.25em] text-muted-foreground">
           Solo administración
@@ -467,7 +470,8 @@ function Panel() {
                     ))}
                   </div>
                   <span className="text-xs text-muted-foreground">
-                    {sellos} de {META}{sellos === META && " · ¡Tarjeta completa!"}
+                    {sellos} de {META}
+                    {sellos === META && " · ¡Tarjeta completa!"}
                   </span>
                 </div>
 
@@ -511,7 +515,11 @@ function Panel() {
           onCerrar={() => setEscaneando(false)}
           onLeer={(texto) => {
             setEscaneando(false);
-            const usuario = texto.trim().replace(new RegExp(`^${PREFIJO_QR}`, "i"), "").replace(/^@/, "").toLowerCase();
+            const usuario = texto
+              .trim()
+              .replace(new RegExp(`^${PREFIJO_QR}`, "i"), "")
+              .replace(/^@/, "")
+              .toLowerCase();
             const cliente = clientes.find(
               (c) => (c.instagram ?? "").replace(/^@/, "").toLowerCase() === usuario,
             );

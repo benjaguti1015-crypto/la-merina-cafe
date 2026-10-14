@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Terminos } from "@/components/Terminos";
+import { CampoCumpleanos, type Cumple } from "@/components/CampoCumpleanos";
 import { MARCA, MARCA_COMPLETA, META } from "@/lib/marca";
 
 export const Route = createFileRoute("/registro")({
@@ -10,8 +11,7 @@ export const Route = createFileRoute("/registro")({
       { title: `Crea tu tarjeta | ${MARCA_COMPLETA}` },
       {
         name: "description",
-        content:
-          `Regístrate con tu nombre, tu usuario de Instagram y tu cumpleaños para recibir tu tarjeta de fidelidad de ${META} sellos.`,
+        content: `Regístrate con tu nombre, tu usuario de Instagram y tu cumpleaños para recibir tu tarjeta de fidelidad de ${META} sellos.`,
       },
       { property: "og:title", content: `Crea tu tarjeta | ${MARCA_COMPLETA}` },
       {
@@ -29,7 +29,7 @@ function Registro() {
   const navigate = useNavigate();
   const [nombre, setNombre] = useState("");
   const [instagram, setInstagram] = useState("");
-  const [cumpleanos, setCumpleanos] = useState("");
+  const [cumpleanos, setCumpleanos] = useState<Cumple>(null);
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
 
@@ -46,12 +46,16 @@ function Registro() {
       return;
     }
 
-    const cumpleanosFormato = cumpleanos ? cumpleanos.split("-").reverse().join("/") : null;
+    if (cumpleanos === false) {
+      setError("Revisa tu cumpleaños: escribe día, mes y año (ej: 07 / 03 / 1995).");
+      return;
+    }
+
     setEnviando(true);
     const { data, error: err } = await supabase.rpc("registro_publico", {
       p_nombre: nombre.trim(),
       p_instagram: instagram.trim().replace(/^@/, ""),
-      p_cumpleanos: cumpleanosFormato,
+      p_cumpleanos: cumpleanos,
     });
     setEnviando(false);
 
@@ -81,7 +85,9 @@ function Registro() {
         <h1 className="mt-3 text-center text-xl font-bold leading-tight text-primary">
           Únete a {MARCA}
         </h1>
-        <p className="mt-1 text-center text-sm text-muted-foreground">Tu tarjeta de {META} sellos</p>
+        <p className="mt-1 text-center text-sm text-muted-foreground">
+          Tu tarjeta de {META} sellos
+        </p>
 
         <label className="mt-5 block text-sm font-semibold text-primary" htmlFor="nombre">
           Nombre y apellido
@@ -112,17 +118,11 @@ function Registro() {
           className={campo}
         />
 
-        <label className="mt-4 block text-sm font-semibold text-primary" htmlFor="cumpleanos">
+        <p className="mt-4 block text-sm font-semibold text-primary">
           🎂 Cumpleaños{" "}
           <span className="text-xs font-normal text-muted-foreground">(opcional)</span>
-        </label>
-        <input
-          id="cumpleanos"
-          type="date"
-          value={cumpleanos}
-          onChange={(e) => setCumpleanos(e.target.value)}
-          className={campo}
-        />
+        </p>
+        <CampoCumpleanos onChange={setCumpleanos} className="mt-1" />
         <p className="mt-1 text-xs text-muted-foreground">Así te saludamos en tu día. 🎉</p>
 
         {error && <p className="mt-3 text-sm text-destructive">{error}</p>}

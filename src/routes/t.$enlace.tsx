@@ -6,6 +6,7 @@ import { TarjetaFidelidad } from "@/components/TarjetaFidelidad";
 import { Terminos } from "@/components/Terminos";
 import { ActivarAvisos } from "@/components/ActivarAvisos";
 import { BotonWallet } from "@/components/BotonWallet";
+import { CampoCumpleanos, type Cumple } from "@/components/CampoCumpleanos";
 import { MARCA } from "@/lib/marca";
 
 export const Route = createFileRoute("/t/$enlace")({
@@ -57,7 +58,7 @@ function VistaCliente() {
 
   // Estados para el Modal de Cumpleaños
   const [mostrarModalCumple, setMostrarModalCumple] = useState(false);
-  const [fechaCumple, setFechaCumple] = useState("");
+  const [fechaCumple, setFechaCumple] = useState<Cumple>(null);
   const [guardandoCumple, setGuardandoCumple] = useState(false);
   const [errorCumple, setErrorCumple] = useState<string | null>(null);
 
@@ -110,17 +111,17 @@ function VistaCliente() {
   // Guardar cumpleaños en Supabase con RPC segura
   const handleGuardarCumpleanos = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fechaCumple) return;
+    if (!fechaCumple) {
+      setErrorCumple("Escribe día, mes y año (ej: 07 / 03 / 1995).");
+      return;
+    }
 
     setGuardandoCumple(true);
     setErrorCumple(null);
 
-    // yyyy-mm-dd -> dd/mm/yyyy, mismo formato que usa /registro
-    const cumpleanosFormato = fechaCumple.split("-").reverse().join("/");
-
     const { data: guardado, error } = await supabase.rpc("actualizar_cumpleanos_publico", {
       p_enlace: enlace,
-      p_cumpleanos: cumpleanosFormato,
+      p_cumpleanos: fechaCumple,
     });
 
     setGuardandoCumple(false);
@@ -131,7 +132,7 @@ function VistaCliente() {
     }
 
     setMostrarModalCumple(false);
-    setFechaCumple("");
+    setFechaCumple(null);
     await refetch();
   };
 
@@ -162,9 +163,7 @@ function VistaCliente() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10 relative">
       {isLoading ? (
-        <p className="text-muted-foreground animate-pulse font-medium">
-          Cargando tu tarjeta…
-        </p>
+        <p className="text-muted-foreground animate-pulse font-medium">Cargando tu tarjeta…</p>
       ) : isError || !data ? (
         <p className="max-w-xs text-center text-muted-foreground">
           No encontramos esta tarjeta. Pídenos en caja un enlace válido.
@@ -237,16 +236,10 @@ function VistaCliente() {
 
             <form onSubmit={handleGuardarCumpleanos} className="mt-4 space-y-3">
               <div>
-                <label className="text-[11px] font-semibold text-primary block mb-1">
+                <p className="text-[11px] font-semibold text-primary block mb-1">
                   Tu fecha de nacimiento:
-                </label>
-                <input
-                  type="date"
-                  value={fechaCumple}
-                  onChange={(e) => setFechaCumple(e.target.value)}
-                  required
-                  className="w-full rounded-xl border-2 border-primary/40 bg-crema px-3 py-2 text-sm text-primary outline-none focus:border-primary"
-                />
+                </p>
+                <CampoCumpleanos onChange={setFechaCumple} />
               </div>
 
               {errorCumple && <p className="text-xs text-destructive text-center">{errorCumple}</p>}

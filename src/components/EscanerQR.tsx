@@ -34,9 +34,7 @@ export function EscanerQR({
           () => {},
         );
       })
-      .catch(() =>
-        setError("No pudimos abrir la cámara. Revisa los permisos del navegador."),
-      );
+      .catch(() => setError("No pudimos abrir la cámara. Revisa los permisos del navegador."));
 
     return () => {
       activo = false;
