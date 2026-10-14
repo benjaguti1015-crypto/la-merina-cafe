@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { INSTAGRAM, LINK_INSTAGRAM, MARCA_COMPLETA } from "@/lib/marca";
 
-const CORREO = "benjaguti1015@gmail.com";
+const CORREO = "lamerinacafe@gmail.com";
 
 export const Route = createFileRoute("/privacidad")({
   head: () => ({
@@ -50,7 +50,7 @@ function Privacidad() {
       <article className="w-full max-w-xl rounded-3xl bg-card p-6 shadow-card sm:p-10">
         <h1 className="text-3xl leading-tight text-primary">Política de privacidad</h1>
         <p className="mt-1 text-xs text-muted-foreground">
-          Última actualización: 13 de octubre de 2026
+          Última actualización: 14 de octubre de 2026
         </p>
 
         <p className="mt-5 text-sm leading-relaxed text-foreground/85">
@@ -61,9 +61,9 @@ function Privacidad() {
 
         <Seccion n={1} titulo="Quién es responsable">
           <p>
-            Benjamín Ian Gutierrez Vera, titular de {MARCA_COMPLETA}, cafetería de especialidad,
-            librería y galería en Tomé, Chile. Puedes escribirnos a {enlaceCorreo} o por mensaje
-            directo en Instagram:{" "}
+            Andrea Campos, titular de {MARCA_COMPLETA}, cafetería de especialidad, librería y
+            galería en Tomé, Chile. Puedes escribirnos a {enlaceCorreo} o por mensaje directo en
+            Instagram:{" "}
             <a
               href={LINK_INSTAGRAM}
               target="_blank"

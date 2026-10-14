@@ -6,9 +6,10 @@ export const LINK_INSTAGRAM = `https://www.instagram.com/${INSTAGRAM}/`;
 
 export const META = 10;
 
-// Sellos con premio. PENDIENTE: confirmar premios con La Merina.
+// Sellos con premio.
 export const PREMIOS: Record<number, string> = {
-  10: "Un café de especialidad de regalo",
+  5: "50% de descuento en un café",
+  10: "Un café de regalo",
 };
 
 export const COLOR_MARCA = "#014e68";

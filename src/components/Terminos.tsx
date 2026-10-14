@@ -1,6 +1,5 @@
 import { INSTAGRAM, LINK_INSTAGRAM, META, PREMIOS } from "@/lib/marca";
 
-// PENDIENTE: confirmar con La Merina la compra mínima por sello y los premios.
 export function Terminos({ className = "" }: { className?: string }) {
   return (
     <details
@@ -12,7 +11,7 @@ export function Terminos({ className = "" }: { className?: string }) {
       </summary>
       <ul className="mt-2 list-disc space-y-1.5 pl-4 text-[11px] leading-relaxed text-muted-foreground">
         <li>Máximo 1 sello por día por cliente.</li>
-        <li>Cada compra en La Merina suma 1 sello a tu tarjeta.</li>
+        <li>Cada sello requiere una compra mínima de un café.</li>
         <li>
           Para validar tus sellos y premios debes seguir a{" "}
           <a
