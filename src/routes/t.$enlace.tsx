@@ -147,6 +147,12 @@ function VistaCliente() {
     setTimeout(() => setCopiado(false), 2000);
   };
 
+  // Mandarse el enlace por WhatsApp: más fácil que instalar la tarjeta como app.
+  const enviarWhatsApp = () => {
+    const texto = `Mi tarjeta de ${MARCA} ☕ ${window.location.href}`;
+    window.location.href = `https://wa.me/?text=${encodeURIComponent(texto)}`;
+  };
+
   const handleClickGuardar = async () => {
     if (deferredPrompt) {
       await deferredPrompt.prompt();
@@ -173,14 +179,15 @@ function VistaCliente() {
           {recien && !instalada && (
             <div className="w-full rounded-2xl border border-arena bg-arena-suave px-4 py-3 text-center animate-fade-in">
               <p className="text-sm font-semibold text-primary">
-                ¡Tu tarjeta está lista! Guárdala para tener tus sellos a un toque.
+                ¡Tu tarjeta está lista! Mándatela por WhatsApp para tenerla siempre a mano.
               </p>
+              <BotonWhatsApp onClick={enviarWhatsApp} className="mt-2" />
               <button
                 type="button"
                 onClick={handleClickGuardar}
-                className="mt-2 w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-transform active:scale-[0.97]"
+                className="mt-2 block w-full text-sm font-semibold text-primary underline"
               >
-                Guardar en mi celular
+                📲 O guárdala como app en tu celular
               </button>
               <button
                 type="button"
@@ -204,6 +211,8 @@ function VistaCliente() {
             sellos={data.sellos_actuales}
             instagram={data.instagram}
           />
+
+          {!recien && <BotonWhatsApp onClick={enviarWhatsApp} />}
 
           {!instalada && !recien && (
             <button
@@ -320,5 +329,20 @@ function VistaCliente() {
         </div>
       )}
     </main>
+  );
+}
+
+function BotonWhatsApp({ onClick, className = "" }: { onClick: () => void; className?: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-3 text-sm font-bold text-[#0b3d22] transition-transform duration-150 active:scale-[0.97] ${className}`}
+    >
+      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden>
+        <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3Z" />
+      </svg>
+      Enviarme mi tarjeta por WhatsApp
+    </button>
   );
 }

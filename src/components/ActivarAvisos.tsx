@@ -1,13 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-
-const CLAVE_PUBLICA = import.meta.env["VITE_VAPID_PUBLIC_KEY"] as string | undefined;
-
-function base64AUint8(base64: string) {
-  const relleno = "=".repeat((4 - (base64.length % 4)) % 4);
-  const crudo = atob((base64 + relleno).replace(/-/g, "+").replace(/_/g, "/"));
-  return Uint8Array.from(crudo, (c) => c.charCodeAt(0));
-}
+import { avisosDisponibles, guardarSuscripcion, pedirSuscripcion } from "@/lib/avisos";
 
 type Estado = "oculto" | "listo" | "activo" | "bloqueado" | "guardando" | "error" | "ios";
 
@@ -25,8 +17,8 @@ export function ActivarAvisos({
 
   useEffect(() => {
     setAceptados(localStorage.getItem("avisos_aceptados") === "1");
-    if (!CLAVE_PUBLICA) return;
-    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+    if (!import.meta.env["VITE_VAPID_PUBLIC_KEY"]) return;
+    if (!avisosDisponibles()) {
       // iPhone solo permite avisos con la tarjeta guardada en el inicio.
       setEstado(ios && !instalada ? "ios" : "oculto");
       return;
@@ -40,31 +32,14 @@ export function ActivarAvisos({
   }, [ios, instalada]);
 
   async function activar() {
-    if (!CLAVE_PUBLICA) return;
     setEstado("guardando");
     try {
-      if ((await Notification.requestPermission()) !== "granted") {
+      const sub = await pedirSuscripcion();
+      if (!sub || sub === "denegado") {
         setEstado(Notification.permission === "denied" ? "bloqueado" : "listo");
         return;
       }
-      const reg = await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: base64AUint8(CLAVE_PUBLICA),
-      });
-      const { endpoint, keys } = sub.toJSON();
-      const { data, error } = await supabase.rpc("guardar_suscripcion_push", {
-        p_enlace: enlace,
-        p_endpoint: endpoint ?? "",
-        p_p256dh: keys?.p256dh ?? "",
-        p_auth: keys?.auth ?? "",
-      });
-      if (error || !data) {
-        await sub.unsubscribe();
-        setEstado("error");
-        return;
-      }
-      setEstado("activo");
+      setEstado((await guardarSuscripcion(enlace, sub)) ? "activo" : "error");
     } catch {
       setEstado("error");
     }
