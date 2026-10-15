@@ -61,6 +61,36 @@ export function ActivarAvisos({
       </p>
     );
 
+  const texto =
+    estado === "guardando"
+      ? "Activando…"
+      : aceptados
+        ? "🔔 Activa los avisos que aceptaste"
+        : "🔔 Activar avisos de promos";
+  const fallo = estado === "error" && (
+    <p className="mt-1 text-xs text-destructive">No pudimos activarlos. Inténtalo de nuevo.</p>
+  );
+
+  // Con la tarjeta guardada como app (único caso en que iPhone permite avisos): aviso grande.
+  if (instalada)
+    return (
+      <div className="w-full animate-fade-in rounded-2xl bg-primary p-4 text-center text-primary-foreground shadow-card">
+        <p className="font-marca text-lg leading-tight">¿Te avisamos de promos y premios?</p>
+        <p className="mt-1 text-xs opacity-80">
+          Un toque y listo. Puedes desactivarlos cuando quieras.
+        </p>
+        <button
+          type="button"
+          onClick={activar}
+          disabled={estado === "guardando"}
+          className="mt-3 w-full rounded-xl bg-white px-4 py-3 font-bold text-primary transition-transform duration-150 active:scale-[0.97] disabled:opacity-60"
+        >
+          {texto}
+        </button>
+        {fallo && <div className="mt-2 rounded-lg bg-white/90 px-2 py-1">{fallo}</div>}
+      </div>
+    );
+
   return (
     <div className="text-center">
       <button
@@ -69,15 +99,9 @@ export function ActivarAvisos({
         disabled={estado === "guardando"}
         className="text-sm font-semibold text-primary underline transition-transform active:scale-[0.97] disabled:opacity-60"
       >
-        {estado === "guardando"
-          ? "Activando…"
-          : aceptados
-            ? "🔔 Activa los avisos que aceptaste"
-            : "🔔 Activar avisos de promos"}
+        {texto}
       </button>
-      {estado === "error" && (
-        <p className="mt-1 text-xs text-destructive">No pudimos activarlos. Inténtalo de nuevo.</p>
-      )}
+      {fallo}
     </div>
   );
 }

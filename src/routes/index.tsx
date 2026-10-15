@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { TarjetaFidelidad } from "@/components/TarjetaFidelidad";
 import { EscanerQR } from "@/components/EscanerQR";
 import { EnviarAviso } from "@/components/EnviarAviso";
+import { EditarMensaje } from "@/components/EditarMensaje";
 import { Oveja } from "@/components/Oveja";
 import { MARCA, MARCA_COMPLETA, META, PREFIJO_QR } from "@/lib/marca";
 import {
@@ -388,6 +389,7 @@ function Panel() {
           </form>
         </details>
 
+        <EditarMensaje />
         <EnviarAviso />
 
         <input

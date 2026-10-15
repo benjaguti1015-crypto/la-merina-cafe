@@ -99,6 +99,16 @@ function VistaCliente() {
     refetchOnWindowFocus: true,
   });
 
+  // Mensaje del admin para todas las tarjetas. Si falla (o aún no existe la columna), no se muestra.
+  const { data: mensaje } = useQuery({
+    queryKey: ["mensaje"],
+    queryFn: async () => {
+      const { data } = await supabase.from("configuracion").select("mensaje").maybeSingle();
+      return data?.mensaje ?? null;
+    },
+    refetchInterval: 60000,
+  });
+
   // Evaluar si falta el cumpleaños al cargar la tarjeta
   useEffect(() => {
     if (data && !data.cumpleanos) {
@@ -206,6 +216,17 @@ function VistaCliente() {
             </p>
           )}
 
+          {mensaje && (
+            <p
+              role="status"
+              className="w-full animate-fade-in rounded-2xl border border-arena bg-arena-suave px-4 py-3 text-center text-sm font-semibold text-primary"
+            >
+              📣 {mensaje}
+            </p>
+          )}
+
+          {instalada && <ActivarAvisos enlace={enlace} ios={entorno.ios} instalada />}
+
           <TarjetaFidelidad
             nombre={data.nombre_completo}
             sellos={data.sellos_actuales}
@@ -224,7 +245,7 @@ function VistaCliente() {
             </button>
           )}
 
-          <ActivarAvisos enlace={enlace} ios={entorno.ios} instalada={instalada} />
+          {!instalada && <ActivarAvisos enlace={enlace} ios={entorno.ios} instalada={false} />}
           <BotonWallet enlace={enlace} />
 
           <Terminos className="w-full max-w-sm" />

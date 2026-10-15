@@ -46,18 +46,21 @@ export type Database = {
           acumulacion_activa: boolean
           created_at: string
           id: boolean
+          mensaje: string | null
           updated_at: string
         }
         Insert: {
           acumulacion_activa?: boolean
           created_at?: string
           id?: boolean
+          mensaje?: string | null
           updated_at?: string
         }
         Update: {
           acumulacion_activa?: boolean
           created_at?: string
           id?: boolean
+          mensaje?: string | null
           updated_at?: string
         }
         Relationships: []
