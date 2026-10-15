@@ -16,6 +16,16 @@ export function leerCumple(dia: string, mes: string, anio: string): Cumple {
   return valida ? `${String(d).padStart(2, "0")}/${String(m).padStart(2, "0")}/${a}` : false;
 }
 
+// Acepta dd/mm/aaaa (formato del registro) y aaaa-mm-dd.
+export function esHoyCumpleanos(fecha?: string | null) {
+  const m =
+    fecha?.match(/^(\d{1,2})\/(\d{1,2})\/\d{4}$/) ?? fecha?.match(/^\d{4}-(\d{2})-(\d{2})$/);
+  if (!m || !fecha) return false;
+  const [dia, mes] = fecha.includes("/") ? [+m[1]!, +m[2]!] : [+m[2]!, +m[1]!];
+  const hoy = new Date();
+  return dia === hoy.getDate() && mes === hoy.getMonth() + 1;
+}
+
 // Tres casillas numéricas en vez del calendario: más rápido de llenar en el celular.
 export function CampoCumpleanos({
   onChange,

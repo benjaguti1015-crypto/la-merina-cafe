@@ -34,6 +34,7 @@ export const Route = createFileRoute("/api/enviar-aviso")({
         const cuerpo = (await request.json().catch(() => null)) as {
           titulo?: unknown;
           texto?: unknown;
+          clientes?: unknown;
         } | null;
         const titulo = typeof cuerpo?.titulo === "string" ? cuerpo.titulo.trim() : "";
         const texto = typeof cuerpo?.texto === "string" ? cuerpo.texto.trim() : "";
@@ -41,9 +42,23 @@ export const Route = createFileRoute("/api/enviar-aviso")({
           return json({ error: "Título (máx. 60) y texto (máx. 200) son obligatorios." }, 400);
         }
 
-        const { data: suscripciones, error } = await supabase
+        // Sin "clientes" = todos. Con lista = solo esos clientes (ids de la tabla clientes).
+        const ids = cuerpo?.clientes;
+        const esUuid = (v: unknown) =>
+          typeof v === "string" &&
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
+        if (
+          ids !== undefined &&
+          (!Array.isArray(ids) || ids.length === 0 || ids.length > 2000 || !ids.every(esUuid))
+        ) {
+          return json({ error: "Elige al menos un cliente válido." }, 400);
+        }
+
+        let consulta = supabase
           .from("suscripciones_push")
           .select("id, endpoint, p256dh, auth, clientes(enlace_unico)");
+        if (ids) consulta = consulta.in("cliente_id", ids as string[]);
+        const { data: suscripciones, error } = await consulta;
         if (error) return json({ error: "No pudimos leer las suscripciones." }, 500);
 
         const webpush = (await import("web-push")).default;

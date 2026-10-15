@@ -7,6 +7,7 @@ import { TarjetaFidelidad } from "@/components/TarjetaFidelidad";
 import { EscanerQR } from "@/components/EscanerQR";
 import { EnviarAviso } from "@/components/EnviarAviso";
 import { EditarMensaje } from "@/components/EditarMensaje";
+import { esHoyCumpleanos } from "@/components/CampoCumpleanos";
 import { Oveja } from "@/components/Oveja";
 import { MARCA, MARCA_COMPLETA, META, PREFIJO_QR } from "@/lib/marca";
 import {
@@ -40,6 +41,7 @@ type Cliente = {
   nombre_completo: string;
   enlace_unico: string;
   instagram: string | null;
+  cumpleanos: string | null;
   sellos: number;
 };
 
@@ -174,7 +176,9 @@ function Panel() {
     queryFn: async (): Promise<Cliente[]> => {
       const { data, error } = await supabase
         .from("clientes")
-        .select("id, nombre_completo, enlace_unico, instagram, fidelidad(sellos_actuales)")
+        .select(
+          "id, nombre_completo, enlace_unico, instagram, cumpleanos, fidelidad(sellos_actuales)",
+        )
         .order("nombre_completo");
       if (error) throw error;
       return (data ?? []).map((c) => {
@@ -185,6 +189,7 @@ function Panel() {
           nombre_completo: c.nombre_completo,
           enlace_unico: c.enlace_unico,
           instagram: c.instagram,
+          cumpleanos: c.cumpleanos,
           sellos: (fila as { sellos_actuales: number } | null)?.sellos_actuales ?? 0,
         };
       });
@@ -194,6 +199,11 @@ function Panel() {
     refetchOnWindowFocus: true,
     refetchOnMount: "always",
   });
+
+  const cumpleaneros = useMemo(
+    () => clientes.filter((c) => esHoyCumpleanos(c.cumpleanos)),
+    [clientes],
+  );
 
   const { data: acumulacionActiva = true } = useQuery({
     queryKey: ["configuracion"],
@@ -308,6 +318,28 @@ function Panel() {
           </button>
         </header>
 
+        {cumpleaneros.length > 0 && (
+          <div
+            role="status"
+            className="mt-4 animate-fade-in rounded-2xl border border-arena bg-arena-suave px-4 py-3 text-sm text-primary"
+          >
+            <p className="font-semibold">🎂 Hoy está de cumpleaños:</p>
+            <ul className="mt-1 space-y-0.5">
+              {cumpleaneros.map((c) => (
+                <li key={c.id}>
+                  {c.nombre_completo}
+                  {c.instagram && (
+                    <span className="text-muted-foreground">
+                      {" "}
+                      · @{c.instagram.replace(/^@/, "")}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <button
           onClick={() => {
             setErrorSellos(null);
@@ -390,7 +422,7 @@ function Panel() {
         </details>
 
         <EditarMensaje />
-        <EnviarAviso />
+        <EnviarAviso clientes={clientes} />
 
         <input
           value={busqueda}

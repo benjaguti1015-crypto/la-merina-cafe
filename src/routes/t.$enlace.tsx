@@ -6,7 +6,7 @@ import { TarjetaFidelidad } from "@/components/TarjetaFidelidad";
 import { Terminos } from "@/components/Terminos";
 import { ActivarAvisos } from "@/components/ActivarAvisos";
 import { BotonWallet } from "@/components/BotonWallet";
-import { CampoCumpleanos, type Cumple } from "@/components/CampoCumpleanos";
+import { CampoCumpleanos, esHoyCumpleanos, type Cumple } from "@/components/CampoCumpleanos";
 import { MARCA } from "@/lib/marca";
 
 export const Route = createFileRoute("/t/$enlace")({
@@ -36,16 +36,6 @@ type Tarjeta = {
   cumpleanos?: string | null;
   enlace_unico?: string;
 };
-
-// Acepta dd/mm/aaaa (formato del registro) y aaaa-mm-dd.
-function esHoyCumpleanos(fecha?: string | null) {
-  const m =
-    fecha?.match(/^(\d{1,2})\/(\d{1,2})\/\d{4}$/) ?? fecha?.match(/^\d{4}-(\d{2})-(\d{2})$/);
-  if (!m || !fecha) return false;
-  const [dia, mes] = fecha.includes("/") ? [+m[1]!, +m[2]!] : [+m[2]!, +m[1]!];
-  const hoy = new Date();
-  return dia === hoy.getDate() && mes === hoy.getMonth() + 1;
-}
 
 function VistaCliente() {
   const { enlace } = Route.useParams();
